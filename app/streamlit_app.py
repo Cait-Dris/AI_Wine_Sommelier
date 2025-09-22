@@ -1,5 +1,6 @@
 """Wine Sommelier AI - Interactive Web Application"""
 import streamlit as st
+import os
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
@@ -14,6 +15,16 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+if os.getenv("STREAMLIT_CLOUD"):  # Set this in Streamlit Cloud secrets
+    # Use cloud API (OpenAI, Anthropic, etc.)
+    from src.cloud_client import CloudLLMClient
+    llm_client = CloudLLMClient(api_key=st.secrets["OPENAI_API_KEY"])
+else:
+    # Use local Ollama
+    from src.simple_client import SimpleLLMClient
+    llm_client = SimpleLLMClient()
+
 
 # Custom CSS for elegant styling
 st.markdown("""
