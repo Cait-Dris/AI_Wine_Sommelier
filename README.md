@@ -154,8 +154,8 @@ MIT License - see LICENSE file for details
 
 ## 📧 Contact
 
-- GitHub: [@yourusername](https://github.com/Cait-Dris)
-- LinkedIn: [Your Name](https://linkedin.com/in/caitlin-e-driscoll-ai)
+- GitHub: [@Cait-Dris](https://github.com/Cait-Dris)
+- LinkedIn: [Caitlin Driscoll](https://linkedin.com/in/caitlin-e-driscoll-ai)
 - Email: cait.e.driscoll@gmail.com
 
 ---
