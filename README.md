@@ -154,10 +154,10 @@ MIT License - see LICENSE file for details
 
 ## 📧 Contact
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Name](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
+- GitHub: [@yourusername](https://github.com/Cait-Dris)
+- LinkedIn: [Your Name](https://linkedin.com/in/caitlin-e-driscoll-ai)
+- Email: cait.e.driscoll@gmail.com
 
 ---
 
-*Built with ❤️ by [Your Name] - Turning AI into your personal sommelier*
+*Built with ❤️ by Cait-Dris - Turning AI into your personal sommelier*
