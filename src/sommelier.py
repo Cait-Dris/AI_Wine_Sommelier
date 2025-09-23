@@ -18,10 +18,10 @@ class WineSommelier:
         self.prompt_builder = PromptBuilder()
         self.wine_db = WineDatabase()
     
-    def recommend(self, customer_name, dish_description, persona, save_response=True, include_bottles=True):
+    def recommend(self, customer_name, dish_description, persona, save_response=True, include_bottles=False):
         """Generate wine recommendation for a given dish and persona"""
         
-        # Get the AI recommendation (existing code)
+        # Get the AI recommendation
         prompt = self.prompt_builder.build(
             persona=persona,
             customer_name=customer_name,
@@ -30,8 +30,8 @@ class WineSommelier:
         
         response = self.llm.chat(prompt)
         
-        # Extract wine type from response for bottle search
-        if include_bottles:
+        # Only add bottle recommendations if requested and wine_db exists
+        if include_bottles and hasattr(self, 'wine_db'):
             wine_type = self._extract_wine_type(response)
             if wine_type:
                 bottles = self.wine_db.search_wines(wine_type, dish_description)
