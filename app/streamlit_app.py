@@ -16,14 +16,21 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-if os.getenv("STREAMLIT_CLOUD"):  # Set this in Streamlit Cloud secrets
-    # Use cloud API (OpenAI, Anthropic, etc.)
-    from src.cloud_client import CloudLLMClient
-    llm_client = CloudLLMClient(api_key=st.secrets["OPENAI_API_KEY"])
+IS_CLOUD = os.getenv("STREAMLIT_CLOUD") == "true"
+
+# Import the appropriate client
+if IS_CLOUD:
+    from src.cloud_client import CloudLLMClient as LLMClient
 else:
-    # Use local Ollama
-    from src.simple_client import SimpleLLMClient
-    llm_client = SimpleLLMClient()
+    try:
+        import ollama
+        # Check if Ollama is actually running
+        ollama.list()
+        from src.simple_client import SimpleLLMClient as LLMClient
+    except:
+        # Fallback to cloud if Ollama isn't available locally
+        from src.cloud_client import CloudLLMClient as LLMClient
+        IS_CLOUD = True
 
 
 # Custom CSS for elegant styling
