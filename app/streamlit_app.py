@@ -2,6 +2,7 @@
 import streamlit as st
 import os
 import sys
+import random
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -248,7 +249,8 @@ st.markdown("""
 
 # Initialize
 if 'sommelier' not in st.session_state:
-    st.session_state.sommelier = WineSommelier()
+    llm = LLMClient(model="llama3.2")  # Initialize with default model
+    st.session_state.sommelier = WineSommelier(llm_client=llm)
 if 'history' not in st.session_state:
     st.session_state.history = []
 if 'show_comparison' not in st.session_state:
@@ -299,8 +301,8 @@ with col1:
     </div>
     """, unsafe_allow_html=True)
     
-    # Action buttons
-    col_btn1, col_btn2 = st.columns(2)
+    # Action buttons - Updated with 3 columns
+    col_btn1, col_btn2, col_btn3 = st.columns(3)
     with col_btn1:
         recommend_btn = st.button(
             "🍷 Get Recommendation",
@@ -309,6 +311,13 @@ with col1:
             disabled=not (name and dish)
         )
     with col_btn2:
+        surprise_btn = st.button(
+            "🎲 Surprise Me!",
+            use_container_width=True,
+            disabled=not (name and dish),
+            help="Get a recommendation from a random sommelier"
+        )
+    with col_btn3:
         compare_btn = st.button(
             "🔄 Compare All",
             use_container_width=True,
@@ -318,12 +327,14 @@ with col1:
 with col2:
     st.markdown("## 📜 Your Wine Recommendation")
     
+    # Handle regular recommendation
     if recommend_btn and name and dish:
         with st.spinner("🍇 Consulting our sommelier..."):
             response = st.session_state.sommelier.recommend(
                 customer_name=name,
                 dish_description=dish,
-                persona=persona
+                persona=persona,
+                include_bottles=True  # Include bottle recommendations
             )
             st.session_state.history.append({
                 'name': name,
@@ -333,6 +344,28 @@ with col2:
             })
             st.session_state.show_comparison = False
     
+    # Handle surprise button
+    if surprise_btn and name and dish:
+        # Randomly select a persona
+        random_persona = random.choice(list(PERSONAS.keys()))
+        st.info(f"🎲 Randomly selected: {PERSONAS[random_persona].name}")
+        
+        with st.spinner(f"🍇 Consulting {PERSONAS[random_persona].name}..."):
+            response = st.session_state.sommelier.recommend(
+                customer_name=name,
+                dish_description=dish,
+                persona=random_persona,
+                include_bottles=True  # Include bottle recommendations
+            )
+            st.session_state.history.append({
+                'name': name,
+                'dish': dish,
+                'persona': PERSONAS[random_persona].name + " (Surprise!)",
+                'response': response
+            })
+            st.session_state.show_comparison = False
+    
+    # Handle comparison button
     if compare_btn and name and dish:
         st.session_state.show_comparison = True
     
@@ -394,6 +427,6 @@ if st.session_state.history:
 st.markdown("---")
 st.markdown("""
 <div class="footer">
-    Made with ❤️ using Ollama and Streamlit | <a href="https://github.com/yourusername/wine-sommelier-ai">View on GitHub</a>
+    Made with ❤️ using Ollama and Streamlit | <a href="https://github.com/Cait-Dris/wine-sommelier-ai">View on GitHub</a>
 </div>
 """, unsafe_allow_html=True)
