@@ -329,14 +329,13 @@ with col1:
 with col2:
     st.markdown("## 📜 Your Wine Recommendation")
     
-    # Handle regular recommendation
+    # Regular recommendation (around line 335)
     if recommend_btn and name and dish:
         with st.spinner("🍇 Consulting our sommelier..."):
             response = st.session_state.sommelier.recommend(
                 customer_name=name,
                 dish_description=dish,
-                persona=persona,
-                include_bottles=True  # Include bottle recommendations
+                persona=persona
             )
             st.session_state.history.append({
                 'name': name,
@@ -345,10 +344,9 @@ with col2:
                 'response': response
             })
             st.session_state.show_comparison = False
-    
-    # Handle surprise button
+
+    # Surprise button (around line 350)
     if surprise_btn and name and dish:
-        # Randomly select a persona
         random_persona = random.choice(list(PERSONAS.keys()))
         st.info(f"🎲 Randomly selected: {PERSONAS[random_persona].name}")
         
@@ -356,8 +354,7 @@ with col2:
             response = st.session_state.sommelier.recommend(
                 customer_name=name,
                 dish_description=dish,
-                persona=random_persona,
-                include_bottles=True  # Include bottle recommendations
+                persona=random_persona
             )
             st.session_state.history.append({
                 'name': name,
