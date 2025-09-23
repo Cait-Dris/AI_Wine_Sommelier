@@ -12,16 +12,16 @@ class SimpleLLMClient:
                 from groq import Groq
                 self.client = Groq(api_key=st.secrets["GROQ_API_KEY"])
                 
-                # UPDATED model map with currently active Groq models
+                # Use ONLY currently active Groq models (as of Sept 2024)
                 self.model_map = {
-                    "llama3.2": "llama-3.2-11b-text-preview",  # Updated to active model
-                    "llama3": "llama3-70b-8192",
-                    "llama2": "llama2-70b-4096", 
-                    "gemma": "gemma2-9b-it",  # Updated to gemma2
-                    "mixtral": "mixtral-8x7b-32768",
-                    "qwen": "llama-3.2-11b-text-preview"  # Use llama as fallback
+                    "llama3.2": "llama3-8b-8192",  # Use llama3 8B
+                    "llama3": "llama3-70b-8192",   # Llama 3 70B
+                    "llama2": "llama2-70b-4096",   # Llama 2 70B
+                    "gemma": "gemma-7b-it",        # Gemma 7B
+                    "mixtral": "mixtral-8x7b-32768",  # Mixtral
+                    "qwen": "llama3-8b-8192"       # Default to llama3
                 }
-                self.groq_model = self.model_map.get(model, "llama-3.2-11b-text-preview")
+                self.groq_model = self.model_map.get(model, "llama3-8b-8192")
                 st.sidebar.info(f"Using Groq model: {self.groq_model}")
             except Exception as e:
                 st.error(f"Failed to initialize Groq: {str(e)}")
@@ -42,11 +42,11 @@ class SimpleLLMClient:
                 )
                 return response.choices[0].message.content
             except Exception as e:
-                # If model fails, try with a known good model
-                if "model" in str(e).lower():
+                # If model fails, try with a known stable model
+                if "model" in str(e).lower() or "decommissioned" in str(e).lower():
                     st.warning(f"Model {self.groq_model} failed, trying fallback...")
                     response = self.client.chat.completions.create(
-                        model="llama-3.2-11b-text-preview",  # Fallback model
+                        model="llama3-8b-8192",  # Most stable fallback
                         messages=[{"role": "user", "content": prompt}],
                         temperature=0.7,
                         max_tokens=1000
