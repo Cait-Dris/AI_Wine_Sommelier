@@ -17,6 +17,7 @@ class WineSommelier:
         self.llm = llm_client
         self.prompt_builder = PromptBuilder()
         self.wine_db = WineDatabase()
+        self.conversation_history = []  # ADD THIS LINE - Initialize the history list
     
     def recommend(self, customer_name, dish_description, persona, save_response=True, include_bottles=False):
         """Generate wine recommendation for a given dish and persona"""
