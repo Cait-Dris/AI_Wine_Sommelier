@@ -17,13 +17,13 @@ class WineSommelier:
         self.llm = llm_client
         self.prompt_builder = PromptBuilder()
         self.wine_db = WineDatabase()
-        self.conversation_history = []  # ADD THIS LINE - Initialize the history list
+        self.conversation_history = []
     
     def recommend(self, customer_name, dish_description, persona, save_response=True, include_bottles=False):
         """Generate wine recommendation for a given dish and persona"""
         
-        # Import PERSONAS at the top if not already imported
-        from src.personas import PERSONAS
+        # Store the original persona string for saving
+        persona_key = persona if isinstance(persona, str) else persona
         
         # Get the persona object if a string key was passed
         if isinstance(persona, str):
@@ -33,14 +33,14 @@ class WineSommelier:
         
         # Pass the persona object to prompt_builder
         prompt = self.prompt_builder.build(
-            persona_obj,  # Pass the actual persona object
+            persona_obj,
             customer_name,
             dish_description
         )
         
         response = self.llm.chat(prompt)
         
-        # Rest of the method stays the same...
+        # Only add bottle recommendations if requested
         if include_bottles and hasattr(self, 'wine_db'):
             wine_type = self._extract_wine_type(response)
             if wine_type:
@@ -50,7 +50,8 @@ class WineSommelier:
                     response += "\n\n---\n\n" + bottle_text
         
         if save_response:
-            self._save_interaction(customer_name, dish_description, persona, response)
+            # Use the string key for saving, not the object
+            self._save_interaction(customer_name, dish_description, persona_key, response)
         
         return response
 
@@ -75,7 +76,7 @@ class WineSommelier:
             "timestamp": datetime.now().isoformat(),
             "customer": name,
             "dish": dish,
-            "persona": persona,
+            "persona": persona,  # This should be a string
             "response": response
         }
         self.conversation_history.append(interaction)
@@ -87,7 +88,7 @@ class WineSommelier:
             results[persona_name] = self.recommend(
                 customer_name, 
                 dish, 
-                persona_name,  # This is fine, recommend will handle the conversion
+                persona_name,  # Pass the string key
                 save_response=False, 
                 include_bottles=False
             )
