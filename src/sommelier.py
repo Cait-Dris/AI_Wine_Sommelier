@@ -22,11 +22,11 @@ class WineSommelier:
     def recommend(self, customer_name, dish_description, persona, save_response=True, include_bottles=False):
         """Generate wine recommendation for a given dish and persona"""
         
-        # Get the AI recommendation
+        # Get the AI recommendation - fix the parameter order here
         prompt = self.prompt_builder.build(
-            persona=persona,
-            customer_name=customer_name,
-            user_input=dish_description
+            persona,  # Pass as positional argument
+            customer_name,  # Pass as positional argument
+            dish_description  # Pass as positional argument
         )
         
         response = self.llm.chat(prompt)
