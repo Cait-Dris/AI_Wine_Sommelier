@@ -329,7 +329,7 @@ with col1:
 with col2:
     st.markdown("## 📜 Your Wine Recommendation")
     
-    # Regular recommendation (around line 335)
+    # Regular recommendation 
     if recommend_btn and name and dish:
         with st.spinner("🍇 Consulting our sommelier..."):
             response = st.session_state.sommelier.recommend(

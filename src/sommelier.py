@@ -76,6 +76,6 @@ class WineSommelier:
         results = {}
         for persona_name in PERSONAS.keys():
             results[persona_name] = self.recommend(
-                customer_name, dish, persona_name, save_response=False
+                customer_name, dish, persona_name, save_response=False, include_bottles=False
             )
         return results
