@@ -22,16 +22,25 @@ class WineSommelier:
     def recommend(self, customer_name, dish_description, persona, save_response=True, include_bottles=False):
         """Generate wine recommendation for a given dish and persona"""
         
-        # Get the AI recommendation - fix the parameter order here
+        # Import PERSONAS at the top if not already imported
+        from src.personas import PERSONAS
+        
+        # Get the persona object if a string key was passed
+        if isinstance(persona, str):
+            persona_obj = PERSONAS[persona]
+        else:
+            persona_obj = persona
+        
+        # Pass the persona object to prompt_builder
         prompt = self.prompt_builder.build(
-            persona,  # Pass as positional argument
-            customer_name,  # Pass as positional argument
-            dish_description  # Pass as positional argument
+            persona_obj,  # Pass the actual persona object
+            customer_name,
+            dish_description
         )
         
         response = self.llm.chat(prompt)
         
-        # Only add bottle recommendations if requested and wine_db exists
+        # Rest of the method stays the same...
         if include_bottles and hasattr(self, 'wine_db'):
             wine_type = self._extract_wine_type(response)
             if wine_type:
@@ -76,6 +85,10 @@ class WineSommelier:
         results = {}
         for persona_name in PERSONAS.keys():
             results[persona_name] = self.recommend(
-                customer_name, dish, persona_name, save_response=False, include_bottles=False
+                customer_name, 
+                dish, 
+                persona_name,  # This is fine, recommend will handle the conversion
+                save_response=False, 
+                include_bottles=False
             )
         return results
