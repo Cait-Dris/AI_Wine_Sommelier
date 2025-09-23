@@ -1,4 +1,3 @@
-# test_groq.py
 # tests/test_groq.py
 import streamlit as st
 from groq import Groq
@@ -10,35 +9,48 @@ st.sidebar.write("**Configuration:**")
 st.sidebar.write(f"API Key Present: {'GROQ_API_KEY' in st.secrets}")
 st.sidebar.write(f"Streamlit Cloud: {'STREAMLIT_CLOUD' in st.secrets}")
 
+# List of models to try
+models_to_test = [
+    "llama-3.1-70b-versatile",
+    "llama-3.1-8b-instant", 
+    "llama3-groq-70b-8192-tool-use-preview",
+    "llama3-groq-8b-8192-tool-use-preview",
+    "mixtral-8x7b-32768",
+    "gemma2-9b-it",
+    "gemma-7b-it"
+]
+
 if st.button("Test Groq Connection"):
     try:
         # Initialize client
         client = Groq(api_key=st.secrets["GROQ_API_KEY"])
         st.success("✅ Client initialized")
         
-        # Test API call
-        with st.spinner("Testing API..."):
-            response = client.chat.completions.create(
-                model="llama3-8b-8192",
-                messages=[{"role": "user", "content": "Say 'Wine test successful!' in 5 words or less"}],
-                max_tokens=50
-            )
+        # Test each model
+        st.write("**Testing models:**")
+        working_models = []
         
-        # Show response
-        st.success("✅ API call successful!")
-        st.write("**Response:**", response.choices[0].message.content)
+        for model in models_to_test:
+            try:
+                with st.spinner(f"Testing {model}..."):
+                    response = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": "Say 'hello' in one word"}],
+                        max_tokens=10
+                    )
+                st.success(f"✅ {model} - WORKS")
+                working_models.append(model)
+            except Exception as e:
+                if "does not exist" in str(e) or "decommissioned" in str(e):
+                    st.error(f"❌ {model} - Not available")
+                else:
+                    st.warning(f"⚠️ {model} - Error: {str(e)[:100]}")
         
-        # Show available models
-        st.write("**Available for your app:**")
-        st.code("""
-Models you can use:
-- llama3-8b-8192 (recommended)
-- llama3-70b-8192
-- mixtral-8x7b-32768
-- gemma-7b-it
-        """)
-        
+        if working_models:
+            st.success(f"**Found {len(working_models)} working models!**")
+            st.code("\n".join(working_models))
+        else:
+            st.error("No working models found!")
+            
     except Exception as e:
         st.error(f"❌ Error: {str(e)}")
-        st.write("**Debug info:**")
-        st.code(str(e))
