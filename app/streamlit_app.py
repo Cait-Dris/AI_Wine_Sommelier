@@ -249,7 +249,9 @@ st.markdown("""
 
 # Initialize
 if 'sommelier' not in st.session_state:
-    llm = LLMClient(model="llama3.2")  # Initialize with default model
+    # Initialize LLM client first
+    llm = LLMClient(model="llama3.2")
+    # Pass it to WineSommelier
     st.session_state.sommelier = WineSommelier(llm_client=llm)
 if 'history' not in st.session_state:
     st.session_state.history = []

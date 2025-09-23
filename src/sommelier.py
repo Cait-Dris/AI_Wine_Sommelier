@@ -10,12 +10,12 @@ from src.personas import PERSONAS
 from src.prompt_builder import PromptBuilder
 
 class WineSommelier:
-    """AI Wine Sommelier system with multiple personas."""
-    
-    def __init__(self, model: str = "llama3.2"):
-        self.llm = LLMClient(model)
+    def __init__(self, llm_client=None):
+        if llm_client is None:
+            from src.simple_client import SimpleLLMClient
+            llm_client = SimpleLLMClient()
+        self.llm = llm_client
         self.prompt_builder = PromptBuilder()
-        self.conversation_history: List[Dict[str, Any]] = []
         self.wine_db = WineDatabase()
     
     def recommend(self, customer_name, dish_description, persona, save_response=True, include_bottles=True):
